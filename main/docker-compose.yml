@@ -1,0 +1,44 @@
+version: '3.5'
+
+services:
+  nginx:
+    image: nginx:1.17.10
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - '/home/jeff/docker-apps/nginx/html:/usr/share/nginx/html'   
+      - '/home/jeff/docker-apps/nginx/conf:/etc/nginx/conf.d'
+    networks:
+      network1:
+        ipv4_address: '172.16.10.23'
+  db:
+    image: mariadb:10.11.2
+    container_name: mariadb
+    # restart: always
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3306:3306'
+    volumes:
+      - '/home/jeff/docker-apps/mariadb:/var/lib/mysql:Z'  
+      - "/home/jeff/docker-apps/mariadb-conf.d:/etc/mysql/conf.d:Z"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234qwer
+      TZ: Asia/Taipei
+    networks:
+      network1:
+        ipv4_address: '172.16.10.2'
+networks:
+  network1:
+    name: local-net
+    driver: bridge
+    ipam: 
+      driver: default
+      config: 
+        - subnet: '172.16.10.0/24'
+
+
+
+
+

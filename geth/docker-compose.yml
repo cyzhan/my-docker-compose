@@ -1,0 +1,71 @@
+version: '3.5'
+
+services:
+  geth:
+    image: ethereum/client-go
+    container_name: geth
+    depends_on:
+      - beacon-client
+    volumes: 
+      - '/home/jeff/docker-apps/geth/root:/root' 
+      - '/home/jeff/docker-apps/geth/jwtsecret/jwt.hex:/tmp/jwt.hex'        
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '30303:30303' # TCP and UDP, used by the P2P protocol running the network    
+      - '8545:8545' # TCP, used by the HTTP based JSON RPC API
+      - '8546:8546' # TCP, used by the WebSocket based JSON RPC API 
+      - '8551:8551'
+    command:
+      - "--http"
+      - "--http.addr"
+      - "0.0.0.0"
+      - "--http.rpcprefix=/"
+      - "--authrpc.addr"
+      - "geth"
+      - "--authrpc.port"
+      - "8551"
+      - "--authrpc.vhosts"
+      - "*"
+      - "--syncmode"
+      - "full"
+      - "--authrpc.jwtsecret"
+      - "/tmp/jwt.hex"
+    networks:
+      network1:
+        ipv4_address: '172.16.10.60'      
+  beacon-client:
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:stable
+    container_name: beacon-client
+    volumes: 
+      - '/home/jeff/docker-apps/prysm-beacon/data:/data'  
+      - '/home/jeff/docker-apps/prysm-beacon/jwtsecret/jwt.hex:/tmp/jwt.hex'      
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '4000:4000' 
+      - '13000:13000' 
+      - '12000:12000' 
+    command:
+      - "--datadir=/data"
+      - "--jwt-secret=/tmp/jwt.hex"
+      - "--rpc-host=0.0.0.0"
+      - "--grpc-gateway-host=0.0.0.0"
+      - "--monitoring-host=0.0.0.0"
+      # - "--clear-db"
+      - "--execution-endpoint=http://geth:8551"
+      - "--accept-terms-of-use"
+    networks:
+      network1:
+        ipv4_address: '172.16.10.70'
+networks:
+  network1:
+    name: local-net
+    driver: bridge
+    ipam: 
+      driver: default
+      config: 
+        - subnet: '172.16.10.0/24'
+
+
+
+
+

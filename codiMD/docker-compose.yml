@@ -1,0 +1,41 @@
+version: '3.5'
+
+services:
+  database:
+    image: postgres:11.6-alpine
+    container_name: hackmd-postgres
+    networks:
+      network2:
+        ipv4_address: 172.35.0.2
+    environment:
+      - POSTGRES_USER=codimd
+      - POSTGRES_PASSWORD=qwerasdf123
+      - POSTGRES_DB=codimd
+    volumes:
+      - "/home/jeff/docker-apps/hackmd/postgresql/data:/var/lib/postgresql/data"
+    restart: always
+  codimd:
+    image: hackmdio/hackmd:2.4.1
+    container_name: codimd  
+    environment:
+      - CMD_DB_URL=postgres://codimd:qwerasdf123@database/codimd
+      - CMD_USECDN=false
+    depends_on:
+      - database
+    networks:
+        network2:
+          ipv4_address: 172.35.0.3  
+    ports:
+      - "3000:3000"
+    volumes:
+      - "/home/jeff/docker-apps/hackmd/uploads:/home/hackmd/app/public/uploads"
+    restart: always
+networks:
+  network2:
+    name: codimd-network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      -
+        subnet: 172.35.0.0/24
