@@ -22,7 +22,7 @@ services:
       - '3306:3306'
     volumes:
       - '/home/jeff/docker-apps/mariadb:/var/lib/mysql:Z'  
-      - "/home/jeff/docker-apps/mariadb-conf.d:/etc/mysql/conf.d:Z"
+      # - "/home/jeff/docker-apps/mariadb-conf.d:/etc/mysql/conf.d:Z"
     environment:
       MYSQL_ROOT_PASSWORD: 1234qwer
       TZ: Asia/Taipei
