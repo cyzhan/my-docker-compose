@@ -29,6 +29,16 @@ services:
     networks:
       network1:
         ipv4_address: '172.16.10.2'
+  redis:
+    image: redis:7.0.12
+    # command: redis-server --requirepass EN%E3t5MkUq%ewMg
+    container_name: redis
+    ports:
+      - "6379:6379"
+    # restart: always
+    networks:
+      network1:
+        ipv4_address: '172.16.10.3'    
 networks:
   network1:
     name: local-net
